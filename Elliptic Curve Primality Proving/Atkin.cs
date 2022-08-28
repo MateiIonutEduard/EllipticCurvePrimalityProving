@@ -5,6 +5,7 @@ using Eduard.Cryptography;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Text;
 
 namespace Elliptic_Curve_Primality_Proving
@@ -12,10 +13,12 @@ namespace Elliptic_Curve_Primality_Proving
     class Atkin
     {
         private RNGCryptoServiceProvider rand;
+        private bool skip = true;
 
         public Atkin()
         {
             rand = new RNGCryptoServiceProvider();
+            skip = bool.Parse(ConfigurationManager.AppSettings["QuickFactor"].ToString());
         }
 
         private int w(long D)
@@ -305,6 +308,83 @@ namespace Elliptic_Curve_Primality_Proving
 
             if (factor > root && BigInteger.IsProbablePrime(rand, factor, 50))
                 return factor;
+            else if(skip)
+            {
+                BigInteger small = Brent(factor);
+                if (small == -1) return -1;
+
+                if (small > root && BigInteger.IsProbablePrime(small))
+                    return small;
+                else
+                {
+                    BigInteger lastFactor = factor / small;
+
+                    if (lastFactor > root && BigInteger.IsProbablePrime(lastFactor))
+                        return lastFactor;
+                }
+            }
+
+            return -1;
+        }
+
+        private BigInteger Brent(BigInteger val)
+        {
+            int m = 10;
+            int r = 1;
+
+            int iter = 0;
+            BigInteger z = 0;
+            int k = 0;
+
+            BigInteger n = val;
+            BigInteger x, y, q;
+            BigInteger ys;
+
+            do
+            {
+                y = z;
+                q = 1;
+
+                do
+                {
+                    x = y;
+                    k = 0;
+
+                    for (int i = 1; i <= r; i++)
+                        y = (y * y + 3) % n;
+
+                    do
+                    {
+                        iter++;
+                        ys = y;
+                        int min = (m < r - k) ? m : r - k;
+
+                        for (int i = 1; i <= min; i++)
+                        {
+                            y = (y * y + 3) % n;
+                            q = ((y - x) * q) % n;
+                        }
+
+                        z = BigInteger.Gcd(q, n);
+                        k += m;
+                    } while (k < r && z == 1);
+                    r *= 2;
+                } while (z == 1);
+                if (z == n)
+                {
+                    do
+                    {
+                        ys = (ys * ys + 3) % n;
+                        z = BigInteger.Gcd(ys - x, n);
+                    } while (z == 1);
+                }
+
+                if (z == n) return -1;
+                if (z > 1) return z;
+
+                n /= z;
+                z = y;
+            } while (!BigInteger.IsProbablePrime(n));
 
             return -1;
         }
