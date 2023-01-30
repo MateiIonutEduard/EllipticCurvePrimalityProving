@@ -26,7 +26,6 @@
                 </MenuItem>
                 <MenuItem Header="About" Click="MenuItem_Click_3"/>
             </Menu>
-            <CheckBox x:Name="checkBox" Content="Enable deep integer factorization" Canvas.Left="174" Canvas.Top="428" HorizontalAlignment="Left" VerticalAlignment="Center" Width="198" IsChecked="False" Click="checkBox_Click"/>
         </Canvas>
         <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="217,387,0,0" VerticalAlignment="Top" Width="102" Height="27" SelectedIndex="0" FontSize="14">
             <ComboBoxItem Content="160 bits" HorizontalAlignment="Left" Width="118"/>

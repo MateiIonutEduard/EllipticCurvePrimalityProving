@@ -34,8 +34,6 @@ namespace Elliptic_Curve_Primality_Proving
         {
             InitializeComponent();
             rand = new RNGCryptoServiceProvider();
-            string fast = ConfigurationManager.AppSettings["QuickFactor"];
-            checkBox.IsChecked = bool.Parse(fast);
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -255,19 +253,6 @@ namespace Elliptic_Curve_Primality_Proving
                 IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
                 invokeProv.Invoke();
             }
-        }
-
-        private void checkBox_Click(object sender, RoutedEventArgs e)
-        {
-            var obj = sender as CheckBox;
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-            config.AppSettings.Settings.Remove("QuickFactor");
-            string fast = obj.IsChecked.ToString().ToLower();
-
-            config.AppSettings.Settings.Add("QuickFactor", fast);
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("appSettings");
         }
     }
 }
