@@ -42,8 +42,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Eduard.dll</HintPath>
     </Reference>
-    <Reference Include="Eduard.Cryptography, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Eduard.Cryptography">
       <HintPath>bin\Debug\Eduard.Cryptography.dll</HintPath>
     </Reference>
     <Reference Include="Eduard.Foundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
