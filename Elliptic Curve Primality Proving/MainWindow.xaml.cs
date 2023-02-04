@@ -172,7 +172,6 @@ namespace Elliptic_Curve_Primality_Proving
             resultCode = test.Start(new BigInteger(buffer), sb, bw, cert);
             stopwatch.Stop();
             ts = stopwatch.Elapsed;
-            button_Copy.IsEnabled = true;
         }
 
         private void OnCancel(object sender, RoutedEventArgs e)
