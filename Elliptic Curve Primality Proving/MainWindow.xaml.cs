@@ -1,7 +1,6 @@
 ﻿using System;
 using Eduard;
 using Microsoft.Win32;
-using Eduard.Foundation;
 using System.Text;
 using System.Windows;
 using System.Diagnostics;
@@ -14,6 +13,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Configuration;
 using System.Windows.Controls;
+using Eduard.Cryptography;
 
 namespace Elliptic_Curve_Primality_Proving
 {
@@ -22,7 +22,7 @@ namespace Elliptic_Curve_Primality_Proving
     /// </summary>
     public partial class MainWindow : Window
     {
-        private RNGCryptoServiceProvider rand;
+        private RandomNumberGenerator rand;
         private BackgroundWorker bw;
         private int resultCode = 0;
         private StringBuilder sb;
@@ -33,7 +33,7 @@ namespace Elliptic_Curve_Primality_Proving
         public MainWindow()
         {
             InitializeComponent();
-            rand = new RNGCryptoServiceProvider();
+            rand = RandomNumberGenerator.Create();
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -147,10 +147,13 @@ namespace Elliptic_Curve_Primality_Proving
 
                 Paragraph p = new Paragraph();
                 p.FontSize = 12;
+
                 p.Inlines.Add(sb.ToString());
                 richTextBox.Document.Blocks.Add(p);
+
                 p.Inlines.Add(new Bold(new Run("Number is proven prime.\n") { Foreground = Brushes.ForestGreen}));
-                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts)) { Foreground = Brushes.Blue }));
+                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts.FormatTime())) { Foreground = Brushes.Blue }));
+
                 button_Copy.IsEnabled = true;
                 sb.Clear();
             }

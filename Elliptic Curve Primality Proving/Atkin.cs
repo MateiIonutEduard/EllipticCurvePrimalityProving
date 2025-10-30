@@ -1,22 +1,22 @@
 ﻿using System;
 using Eduard;
-using Eduard.Foundation;
 using Eduard.Cryptography;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Text;
+using ECPoint = Eduard.Cryptography.ECPoint;
 
 namespace Elliptic_Curve_Primality_Proving
 {
     class Atkin
     {
-        private RNGCryptoServiceProvider rand;
+        private RandomNumberGenerator rand;
 
         public Atkin()
         {
-            rand = new RNGCryptoServiceProvider();
+            rand = RandomNumberGenerator.Create();
         }
 
         private int w(long D)
@@ -32,6 +32,7 @@ namespace Elliptic_Curve_Primality_Proving
         {
             BigInteger[] args = null;
             ECPoint point = ECPoint.POINT_INFINITY;
+
             ECPoint P = ECPoint.POINT_INFINITY;
             EllipticCurve curve = null;
 
@@ -39,22 +40,31 @@ namespace Elliptic_Curve_Primality_Proving
             {
                 if (bw.CancellationPending) return;
                 curve = new EllipticCurve(args[0], args[1], args[2], args[3]);
+
                 sb.AppendFormat("N = {0}\n", args[2].ToString());
                 sb.AppendFormat("a = {0}", args[0].ToString());
+
                 sb.AppendLine();
                 sb.AppendFormat("b = {0}", args[1].ToString());
+
                 sb.AppendLine();
                 sb.AppendFormat("m = {0}", args[3].ToString());
+
                 sb.AppendLine();
                 sb.AppendFormat("q = {0}", args[4].ToString());
+
                 sb.AppendLine();
                 point = new ECPoint(args[5], args[6]);
+
                 sb.AppendFormat("P = ({0}, {1})", point.GetAffineX().ToString(), point.GetAffineY().ToString());
                 sb.AppendLine();
+
                 P = ECMath.Multiply(curve, args[3] / args[4], point);
                 sb.AppendFormat("Q = ({0}, {1})", P.GetAffineX().ToString(), P.GetAffineY().ToString());
+
                 sb.AppendLine();
                 P = ECMath.Multiply(curve, args[4], P);
+
                 sb.Append("R = (0, 1)\n");
                 sb.AppendLine();
             }
@@ -206,12 +216,12 @@ namespace Elliptic_Curve_Primality_Proving
                     goto case 5;
                 case 5:
                     if (bw.CancellationPending) return -1;
-                    curve = new EllipticCurve(a, b, val, order);
+                    curve = new EllipticCurve(a, b, val, factor, order / factor);
                     point = curve.BasePoint;
                     goto case 6;
                 case 6:
-                    P = ECMath.Multiply(curve, order / factor, point);
-                    Q = ECMath.Multiply(curve, factor, P);
+                    P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
+                    Q = ECMath.Multiply(curve, factor, P, ECMode.EC_FASTEST);
 
                     if (Q == ECPoint.POINT_INFINITY)
                         goto case 9;
@@ -240,12 +250,12 @@ namespace Elliptic_Curve_Primality_Proving
                 case 8:
                     if (bw.CancellationPending) return -1;
                     point = curve.BasePoint;
-                    P = ECMath.Multiply(curve, order / factor, point);
+                    P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
 
                     if (P == ECPoint.POINT_INFINITY)
                         goto case 8;
 
-                    Q = ECMath.Multiply(curve, factor, P);
+                    Q = ECMath.Multiply(curve, factor, P, ECMode.EC_FASTEST);
 
                     if (Q != ECPoint.POINT_INFINITY)
                         goto case 7;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Eduard;
 using System.IO;
-using Eduard.Foundation;
+using Eduard.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
