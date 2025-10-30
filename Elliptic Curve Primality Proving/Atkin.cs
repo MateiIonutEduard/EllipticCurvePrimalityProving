@@ -39,7 +39,7 @@ namespace Elliptic_Curve_Primality_Proving
             while((args = cert.Read()) != null)
             {
                 if (bw.CancellationPending) return;
-                curve = new EllipticCurve(args[0], args[1], args[2], args[3]);
+                curve = new EllipticCurve(args[0], args[1], args[2], args[3], args[3] / args[4]);
 
                 sb.AppendFormat("N = {0}\n", args[2].ToString());
                 sb.AppendFormat("a = {0}", args[0].ToString());
@@ -59,11 +59,11 @@ namespace Elliptic_Curve_Primality_Proving
                 sb.AppendFormat("P = ({0}, {1})", point.GetAffineX().ToString(), point.GetAffineY().ToString());
                 sb.AppendLine();
 
-                P = ECMath.Multiply(curve, args[3] / args[4], point);
+                P = ECMath.Multiply(curve, args[3] / args[4], point, ECMode.EC_STANDARD_PROJECTIVE);
                 sb.AppendFormat("Q = ({0}, {1})", P.GetAffineX().ToString(), P.GetAffineY().ToString());
 
                 sb.AppendLine();
-                P = ECMath.Multiply(curve, args[4], P);
+                P = ECMath.Multiply(curve, args[4], P, ECMode.EC_FASTEST);
 
                 sb.Append("R = (0, 1)\n");
                 sb.AppendLine();

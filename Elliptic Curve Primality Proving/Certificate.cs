@@ -8,6 +8,7 @@ namespace Elliptic_Curve_Primality_Proving
     {
         private XmlDocument xmlDoc;
         private XmlNodeList nodes;
+
         private XmlNode rootNode;
         private int index;
 
@@ -95,7 +96,8 @@ namespace Elliptic_Curve_Primality_Proving
             rootNode.AppendChild(userNode);
         }
 
-        public void Save(string path)
-        { xmlDoc.Save(path); }
+        public void Save(string path) => xmlDoc.Save(path);
+
+        public bool IsEmpty() => rootNode.ChildNodes.Count == 0;
     }
 }
