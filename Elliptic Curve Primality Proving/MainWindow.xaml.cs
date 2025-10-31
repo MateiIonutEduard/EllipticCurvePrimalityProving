@@ -1,19 +1,20 @@
-﻿using System;
-using Eduard;
+﻿using Eduard;
+using Eduard.Cryptography;
 using Microsoft.Win32;
-using System.Text;
-using System.Windows;
-using System.Diagnostics;
-using System.Windows.Documents;
-using System.Security.Cryptography;
-using System.Threading;
+using System;
 using System.ComponentModel;
-using System.Windows.Media;
+using System.Configuration;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using System.Configuration;
 using System.Windows.Controls;
-using Eduard.Cryptography;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Elliptic_Curve_Primality_Proving
 {
@@ -112,7 +113,7 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void button_Copy_Click(object sender, RoutedEventArgs e)
         {
-            // There will make primality proving certificate...
+            /* begin generation of the primality proving certificate for the specified probable prime */
             richTextBox.Document.Blocks.Clear();
             buffer = textBox.Text;
             groupBox.Focus();
@@ -127,6 +128,11 @@ namespace Elliptic_Curve_Primality_Proving
                 bw.WorkerReportsProgress = false;
                 bw.WorkerSupportsCancellation = true;
 
+                /* remove existing event handlers first to prevent duplicates */
+                bw.DoWork -= Verify;
+                bw.RunWorkerCompleted -= WorkComplete;
+
+                /* attach the event handlers, by refreshing each time */
                 bw.DoWork += Verify;
                 bw.RunWorkerCompleted += WorkComplete;
 
@@ -137,7 +143,7 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void TestComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if(bw.CancellationPending)
+            if(e.Cancelled)
             {
                 MessageBox.Show("Certificate validation has been canceled.", "Elliptic Curve Primality Proving");
                 button_Copy.IsEnabled = true;
@@ -174,7 +180,7 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!bw.CancellationPending)
+            if (!e.Cancelled)
             {
                 if(resultCode == -2)
                 {
@@ -185,7 +191,7 @@ namespace Elliptic_Curve_Primality_Proving
 
                 Paragraph p = new Paragraph();
                 p.FontSize = 12;
-
+                
                 p.Inlines.Add(sb.ToString());
                 richTextBox.Document.Blocks.Add(p);
 
@@ -227,11 +233,14 @@ namespace Elliptic_Curve_Primality_Proving
 
             if (!bw.CancellationPending)
             {
-                bw.CancelAsync();
-                MessageBox.Show("Primality proving was canceled.", "Elliptic Curve Primality Proving");
+                bw.CancelAsync(); 
+                textBox.Clear();
+
+                MessageBox.Show("Primality proving was canceled.", 
+                    "Elliptic Curve Primality Proving");
+
                 richTextBox.Document.Blocks.Clear();
                 button_Copy.IsEnabled = true;
-                textBox.Clear();
             }
         }
 
@@ -249,8 +258,15 @@ namespace Elliptic_Curve_Primality_Proving
             {
                 cert = new Certificate(opf.FileName);
                 bw = new BackgroundWorker();
+
                 bw.WorkerReportsProgress = false;
                 bw.WorkerSupportsCancellation = true;
+
+                /* remove existing event handlers first */
+                bw.DoWork -= VerifyCert;
+                bw.RunWorkerCompleted -= TestComplete;
+
+                /* attach fresh event handlers */
                 bw.DoWork += VerifyCert;
                 bw.RunWorkerCompleted += TestComplete;
                 bw.RunWorkerAsync();
