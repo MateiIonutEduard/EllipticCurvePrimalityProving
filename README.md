@@ -1,7 +1,7 @@
 ## Description
-This repository provides an implementation of the Atkin–Morain primality test for verifying the primality of odd integer inputs.<br/>
-The algorithm leverages elliptic curves constructed via the Complex Multiplication (CM) method, offering improved practical <br/>efficiency over the Goldwasser–Kilian test, which depends on randomly generated curves and group order computations using<br/> 
-Schoof’s algorithm.
+This repository provides an implementation of the Atkin–Morain primality test for verifying the primality of odd integer inputs.
+The algorithm leverages elliptic curves constructed via the Complex Multiplication (CM) method, offering improved practical efficiency over the 
+Goldwasser–Kilian test, which depends on randomly generated curves and group order computations using Schoof’s algorithm.<br/>
 
 Elliptic curve operations are performed using a mixed Jacobian–projective representation on recursively generated Weierstrass curves,<br/> ensuring efficient arithmetic and robust numerical stability.<br/>
 
