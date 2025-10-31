@@ -1,19 +1,20 @@
-﻿using System;
-using Eduard;
+﻿using Eduard;
+using Eduard.Cryptography;
 using Microsoft.Win32;
-using Eduard.Foundation;
-using System.Text;
-using System.Windows;
-using System.Diagnostics;
-using System.Windows.Documents;
-using System.Security.Cryptography;
-using System.Threading;
+using System;
 using System.ComponentModel;
-using System.Windows.Media;
+using System.Configuration;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using System.Configuration;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Elliptic_Curve_Primality_Proving
 {
@@ -22,10 +23,12 @@ namespace Elliptic_Curve_Primality_Proving
     /// </summary>
     public partial class MainWindow : Window
     {
-        private RNGCryptoServiceProvider rand;
-        private BackgroundWorker bw;
+        private RandomNumberGenerator rand;
+        private BackgroundWorker bw = new BackgroundWorker();
+
         private int resultCode = 0;
         private StringBuilder sb;
+
         private string buffer;
         private Certificate cert;
         private TimeSpan ts;
@@ -33,11 +36,12 @@ namespace Elliptic_Curve_Primality_Proving
         public MainWindow()
         {
             InitializeComponent();
-            rand = new RNGCryptoServiceProvider();
+            rand = RandomNumberGenerator.Create();
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            /* generate random prime of specific bit size to be tested */
             if(string.IsNullOrEmpty(textBox.Text))
             {
                 new Thread(() =>
@@ -46,8 +50,10 @@ namespace Elliptic_Curve_Primality_Proving
                     {
                         string[] all = comboBox.Text.Split(' ');
                         int bits = int.Parse(all[0]);
+
                         BigInteger field = BigInteger.GenProbablePrime(rand, bits, 50);
                         Polynomial.SetField(field);
+
                         textBox.Text = field.ToString();
                         richTextBox.Document.Blocks.Clear();
                     }));
@@ -55,32 +61,59 @@ namespace Elliptic_Curve_Primality_Proving
             }
             else
             {
-                new Thread(() =>
+                /* skip existing primality certificate */
+                if (button_Copy.IsEnabled && (cert != null && !cert.IsEmpty()))
                 {
-                    Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        BigInteger field = new BigInteger(textBox.Text);
-                        bool isPrime = BigInteger.IsProbablePrime(rand, field, 50);
+                    var res = MessageBox.Show("Skip certificate export?", "Elliptic Curve Primality Proving",
+                        MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                        if (!isPrime)
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        new Thread(() =>
                         {
-                            if (MessageBox.Show("Number is not prime.") == MessageBoxResult.OK)
+                            Dispatcher.BeginInvoke(new Action(() =>
                             {
-                                groupBox.Focus();
-                                textBox.Clear();
+                                string[] all = comboBox.Text.Split(' ');
+                                int bits = int.Parse(all[0]);
+
+                                BigInteger field = BigInteger.GenProbablePrime(rand, bits, 50);
+                                Polynomial.SetField(field);
+
+                                textBox.Text = field.ToString();
+                                richTextBox.Document.Blocks.Clear();
+                            }));
+                        }).Start();
+                    }
+                }
+                else
+                {
+                    new Thread(() =>
+                    {
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            BigInteger field = new BigInteger(textBox.Text);
+                            bool isPrime = BigInteger.IsProbablePrime(rand, field, 50);
+
+                            if (!isPrime)
+                            {
+                                if (MessageBox.Show("Number is not prime.") == MessageBoxResult.OK)
+                                {
+                                    groupBox.Focus();
+                                    textBox.Clear();
+                                }
                             }
-                        }
-                        else
-                            Polynomial.SetField(field);
-                    }));
-                }).Start();
+                            else
+                                Polynomial.SetField(field);
+                        }));
+                    }).Start();
+                }
             }
             
         }
 
         private void button_Copy_Click(object sender, RoutedEventArgs e)
         {
-            // There will make primality proving certificate...
+            /* begin generation of the primality proving certificate for the specified probable prime */
             richTextBox.Document.Blocks.Clear();
             buffer = textBox.Text;
             groupBox.Focus();
@@ -92,11 +125,17 @@ namespace Elliptic_Curve_Primality_Proving
             }
             else
             {
-                bw = new BackgroundWorker();
                 bw.WorkerReportsProgress = false;
                 bw.WorkerSupportsCancellation = true;
+
+                /* remove existing event handlers first to prevent duplicates */
+                bw.DoWork -= Verify;
+                bw.RunWorkerCompleted -= WorkComplete;
+
+                /* attach the event handlers, by refreshing each time */
                 bw.DoWork += Verify;
                 bw.RunWorkerCompleted += WorkComplete;
+
                 bw.RunWorkerAsync();
                 button_Copy.IsEnabled = false;
             }
@@ -104,7 +143,7 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void TestComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if(bw.CancellationPending)
+            if(e.Cancelled)
             {
                 MessageBox.Show("Certificate validation has been canceled.", "Elliptic Curve Primality Proving");
                 button_Copy.IsEnabled = true;
@@ -114,10 +153,13 @@ namespace Elliptic_Curve_Primality_Proving
             {
                 Paragraph p = new Paragraph();
                 p.FontSize = 12;
+
                 p.Inlines.Add(sb.ToString());
                 richTextBox.Document.Blocks.Add(p);
+
                 p.Inlines.Add(new Bold(new Run("Number is proven prime.\n"){ Foreground = Brushes.ForestGreen }));
-                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts)) { Foreground = Brushes.Blue }));
+                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts.FormatTime())) { Foreground = Brushes.Blue }));
+
                 button_Copy.IsEnabled = true;
                 sb.Clear();
             }
@@ -127,8 +169,10 @@ namespace Elliptic_Curve_Primality_Proving
         {
             Atkin test = new Atkin();
             sb = new StringBuilder();
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+
             test.VerifyCert(sb, bw, cert);
             stopwatch.Stop();
             ts = stopwatch.Elapsed;
@@ -136,7 +180,7 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!bw.CancellationPending)
+            if (!e.Cancelled)
             {
                 if(resultCode == -2)
                 {
@@ -147,10 +191,13 @@ namespace Elliptic_Curve_Primality_Proving
 
                 Paragraph p = new Paragraph();
                 p.FontSize = 12;
+                
                 p.Inlines.Add(sb.ToString());
                 richTextBox.Document.Blocks.Add(p);
+
                 p.Inlines.Add(new Bold(new Run("Number is proven prime.\n") { Foreground = Brushes.ForestGreen}));
-                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts)) { Foreground = Brushes.Blue }));
+                p.Inlines.Add(new Bold(new Run(string.Format("{0}", ts.FormatTime())) { Foreground = Brushes.Blue }));
+
                 button_Copy.IsEnabled = true;
                 sb.Clear();
             }
@@ -165,18 +212,20 @@ namespace Elliptic_Curve_Primality_Proving
         {
             Atkin test = new Atkin();
             sb = new StringBuilder();
-            cert = new Certificate();
 
+            cert = new Certificate();
             Stopwatch stopwatch = new Stopwatch();
+
             stopwatch.Start();
             resultCode = test.Start(new BigInteger(buffer), sb, bw, cert);
+
             stopwatch.Stop();
             ts = stopwatch.Elapsed;
         }
 
         private void OnCancel(object sender, RoutedEventArgs e)
         {
-            if(bw == null || (bw != null && !bw.IsBusy))
+            if(!bw.IsBusy)
             {
                 groupBox.Focus();
                 return;
@@ -184,11 +233,14 @@ namespace Elliptic_Curve_Primality_Proving
 
             if (!bw.CancellationPending)
             {
-                bw.CancelAsync();
-                MessageBox.Show("Primality proving was canceled.", "Elliptic Curve Primality Proving");
+                bw.CancelAsync(); 
+                textBox.Clear();
+
+                MessageBox.Show("Primality proving was canceled.", 
+                    "Elliptic Curve Primality Proving");
+
                 richTextBox.Document.Blocks.Clear();
                 button_Copy.IsEnabled = true;
-                textBox.Clear();
             }
         }
 
@@ -206,8 +258,15 @@ namespace Elliptic_Curve_Primality_Proving
             {
                 cert = new Certificate(opf.FileName);
                 bw = new BackgroundWorker();
+
                 bw.WorkerReportsProgress = false;
                 bw.WorkerSupportsCancellation = true;
+
+                /* remove existing event handlers first */
+                bw.DoWork -= VerifyCert;
+                bw.RunWorkerCompleted -= TestComplete;
+
+                /* attach fresh event handlers */
                 bw.DoWork += VerifyCert;
                 bw.RunWorkerCompleted += TestComplete;
                 bw.RunWorkerAsync();
@@ -216,8 +275,9 @@ namespace Elliptic_Curve_Primality_Proving
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            if (bw.IsBusy) return;
+            if (string.IsNullOrEmpty(textBox.Text) || bw.IsBusy) return;
             textBox.Clear();
+
             richTextBox.Document.Blocks.Clear();
             // Now, the ECPP certificate will be saved on XML file.
             SaveFileDialog opf = new SaveFileDialog();

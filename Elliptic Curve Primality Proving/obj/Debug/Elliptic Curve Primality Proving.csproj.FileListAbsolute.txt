@@ -1,0 +1,24 @@
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Elliptic Curve Primality Proving.exe.config
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Elliptic Curve Primality Proving.exe
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Elliptic Curve Primality Proving.pdb
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Eduard.dll
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Newtonsoft.Json.dll
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Eduard.pdb
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Eduard.xml
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\bin\Debug\Newtonsoft.Json.xml
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.csproj.AssemblyReference.cache
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\About.g.cs
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\MainWindow.g.cs
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\App.g.cs
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving_MarkupCompile.cache
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving_MarkupCompile.lref
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\About.baml
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\MainWindow.baml
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.g.resources
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic_Curve_Primality_Proving.Properties.Resources.resources
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.csproj.GenerateResource.cache
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.csproj.CoreCompileInputs.cache
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic.0F8F0055.Up2Date
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.exe
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.pdb
+C:\Users\eduar\Documents\GitHub\EllipticCurvePrimalityProving\Elliptic Curve Primality Proving\obj\Debug\Elliptic Curve Primality Proving.exe.config
