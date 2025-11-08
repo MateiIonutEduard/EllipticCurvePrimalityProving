@@ -182,6 +182,7 @@ namespace Elliptic_Curve_Primality_Proving
                     {
                         Polynomial poly = hp.GetHilbertPolynomial(D);
                         List<BigInteger> roots = new List<BigInteger>();
+
                         if (poly.Degree > 1) poly.FindRoots(ref roots);
                         else roots.Add(val - poly.coeffs[0]);
 
@@ -217,7 +218,7 @@ namespace Elliptic_Curve_Primality_Proving
                 case 5:
                     if (bw.CancellationPending) return -1;
                     curve = new EllipticCurve(a, b, val, factor, order / factor);
-                    point = curve.BasePoint;
+                    point = AtkinMorainUtil.GetBasePoint(curve);
                     goto case 6;
                 case 6:
                     P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
@@ -249,7 +250,7 @@ namespace Elliptic_Curve_Primality_Proving
                     goto case 5;
                 case 8:
                     if (bw.CancellationPending) return -1;
-                    point = curve.BasePoint;
+                    point = AtkinMorainUtil.GetBasePoint(curve);
                     P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
 
                     if (P == ECPoint.POINT_INFINITY)

@@ -68,6 +68,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AtkinMorainUtil.cs" />
     <Compile Include="TimeFormatterExtensions.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
