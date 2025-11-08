@@ -1,76 +1,90 @@
 ﻿using System;
-using Eduard;
+using System.Collections.Generic;
 using System.IO;
+using Eduard;
 using Eduard.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Elliptic_Curve_Primality_Proving
 {
     class Hilbert
     {
-        private JObject obj;
-        private static BigInteger field;
-        private List<long> list;
-        private int index;
+        private static readonly JObject _jsonData;
+        private static readonly List<long> _discriminants;
+        private static BigInteger _field;
+
+        private int _index;
+
+        /// <summary>
+        /// Static constructor for one-time initialization.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        static Hilbert()
+        {
+            try
+            {
+                var jsonText = File.ReadAllText(@"data\disc.json");
+                _jsonData = JObject.Parse(jsonText);
+
+                /* pre-initialize discriminants list */
+                _discriminants = new List<long> { -3, -4 };
+
+                if (_jsonData["disc"] is JArray discArray)
+                {
+                    foreach (var item in discArray)
+                    {
+                        if (long.TryParse(item.ToString(), out long discriminant))
+                            _discriminants.Add(discriminant);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to initialize Hilbert class: "
+                    + ex.Message, ex);
+            }
+        }
 
         public Hilbert()
         {
-            list = new List<long>();
-            var temp = File.ReadAllText(@"data\disc.json");
-            obj = JObject.Parse(temp);
-
-            try
-            {
-                JArray items = (JArray)obj["disc"];
-                list.Add(-3);
-                list.Add(-4);
-
-                foreach (var item in items)
-                    list.Add(long.Parse(item.ToString()));
-
-                index = 0;
-            }
-            catch(Exception)
-            { throw; }
+            _index = 0;
         }
 
-        public void Reset()
-        { index = 0; }
+        public void Reset() => _index = 0;
 
         public static void SetModulus(BigInteger modulus)
         {
-            field = modulus;
+            _field = modulus;
             Polynomial.SetField(modulus);
         }
 
         public long NextDiscriminant()
         {
-            if (index < list.Count - 1)
-                return list[index++];
-            return -1;
+            return _index < _discriminants.Count ? _discriminants[_index++] : -1;
         }
 
         public Polynomial GetHilbertPolynomial(long D)
         {
-            try
+            string key = D.ToString();
+
+            if (_jsonData[key] is JArray coefficientsArray)
             {
-                JArray array = (JArray)obj[D.ToString()];
-                List<BigInteger> coeffs = new List<BigInteger>();
+                /* pre-allocate array with known size for better performance */
+                var coeffs = new BigInteger[coefficientsArray.Count];
 
-                foreach (var item in array)
-                    coeffs.Add(new BigInteger(item.ToString()));
+                for (int i = 0; i < coefficientsArray.Count; i++)
+                {
+                    coeffs[i] = new BigInteger(coefficientsArray[i].ToString());
+                }
 
-                coeffs.Reverse();
-                Polynomial result = new Polynomial(coeffs.ToArray());
-                return result;
+                /* reverse in-place instead of creating new collections */
+                Array.Reverse(coeffs);
+                return new Polynomial(coeffs);
             }
-            catch (Exception)
-            { return null; }
+
+            return null;
         }
     }
 }
