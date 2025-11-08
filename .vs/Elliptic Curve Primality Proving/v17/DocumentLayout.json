@@ -7,8 +7,8 @@
       "RelativeMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|solutionrelative:Elliptic Curve Primality Proving\\Atkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|c:\\users\\eduar\\documents\\github\\ellipticcurveprimalityproving\\elliptic curve primality proving\\atkinmorainutil.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|solutionrelative:elliptic curve primality proving\\atkinmorainutil.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|c:\\users\\eduar\\documents\\github\\ellipticcurveprimalityproving\\elliptic curve primality proving\\hilbert.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|solutionrelative:elliptic curve primality proving\\hilbert.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{96330448-19DB-4F3B-A205-723D66481901}|Elliptic Curve Primality Proving\\Elliptic Curve Primality Proving.csproj|c:\\users\\eduar\\documents\\github\\ellipticcurveprimalityproving\\elliptic curve primality proving\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -33,6 +33,19 @@
           "SelectedChildIndex": 5,
           "Children": [
             {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Hilbert.cs",
+              "DocumentMoniker": "C:\\Users\\eduar\\Documents\\GitHub\\EllipticCurvePrimalityProving\\Elliptic Curve Primality Proving\\Hilbert.cs",
+              "RelativeDocumentMoniker": "Elliptic Curve Primality Proving\\Hilbert.cs",
+              "ToolTip": "C:\\Users\\eduar\\Documents\\GitHub\\EllipticCurvePrimalityProving\\Elliptic Curve Primality Proving\\Hilbert.cs",
+              "RelativeToolTip": "Elliptic Curve Primality Proving\\Hilbert.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAQwD4AAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T14:03:35.662Z",
+              "EditorCaption": ""
+            },
+            {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
@@ -43,19 +56,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AtkinMorainUtil.cs",
-              "DocumentMoniker": "C:\\Users\\eduar\\Documents\\GitHub\\EllipticCurvePrimalityProving\\Elliptic Curve Primality Proving\\AtkinMorainUtil.cs",
-              "RelativeDocumentMoniker": "Elliptic Curve Primality Proving\\AtkinMorainUtil.cs",
-              "ToolTip": "C:\\Users\\eduar\\Documents\\GitHub\\EllipticCurvePrimalityProving\\Elliptic Curve Primality Proving\\AtkinMorainUtil.cs",
-              "RelativeToolTip": "Elliptic Curve Primality Proving\\AtkinMorainUtil.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAgwC0AAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-08T13:40:58.73Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -77,7 +77,7 @@
               "RelativeDocumentMoniker": "Elliptic Curve Primality Proving\\Atkin.cs",
               "ToolTip": "C:\\Users\\eduar\\Documents\\GitHub\\EllipticCurvePrimalityProving\\Elliptic Curve Primality Proving\\Atkin.cs",
               "RelativeToolTip": "Elliptic Curve Primality Proving\\Atkin.cs",
-              "ViewState": "AgIAAOkAAAAAAAAAAAAIwPsAAABAAAAAAAAAAA==",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAIwLsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-30T18:56:49.379Z",
               "EditorCaption": ""
