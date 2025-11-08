@@ -75,9 +75,7 @@ namespace Elliptic_Curve_Primality_Proving
                 var coeffs = new BigInteger[coefficientsArray.Count];
 
                 for (int i = 0; i < coefficientsArray.Count; i++)
-                {
                     coeffs[i] = new BigInteger(coefficientsArray[i].ToString());
-                }
 
                 /* reverse in-place instead of creating new collections */
                 Array.Reverse(coeffs);
