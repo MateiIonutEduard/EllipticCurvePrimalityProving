@@ -8,7 +8,7 @@ using System.Configuration;
 using System.Text;
 using ECPoint = Eduard.Cryptography.ECPoint;
 
-namespace Elliptic_Curve_Primality_Proving
+namespace Elliptic_Curve_Primality_Proving.Core
 {
     class Atkin
     {
