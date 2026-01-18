@@ -3,18 +3,16 @@ using Eduard.Cryptography;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Elliptic_Curve_Primality_Proving.Core;
 
 namespace Elliptic_Curve_Primality_Proving
 {

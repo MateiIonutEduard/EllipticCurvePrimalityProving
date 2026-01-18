@@ -8,7 +8,7 @@ using System.Configuration;
 using System.Text;
 using ECPoint = Eduard.Cryptography.ECPoint;
 
-namespace Elliptic_Curve_Primality_Proving
+namespace Elliptic_Curve_Primality_Proving.Core
 {
     class Atkin
     {
@@ -73,7 +73,7 @@ namespace Elliptic_Curve_Primality_Proving
         public int Start(BigInteger field, StringBuilder sb, BackgroundWorker bw, Certificate cert)
         {
             long D = 0;
-            int ID = 1;
+            AtkinCertState state = AtkinCertState.SearchDiscriminant;
             int k = 0;
 
             Random rng = new Random(Environment.TickCount);
@@ -93,21 +93,21 @@ namespace Elliptic_Curve_Primality_Proving
             Hilbert.SetModulus(val);
             BigInteger g = 1;
 
-            switch(ID)
+            switch(state)
             {
-                case 1:
+                case AtkinCertState.SearchDiscriminant:
                     if (bw.CancellationPending) return -1;
                     D = hp.NextDiscriminant();
                     if (D == -1) return -2;
 
                     if (BigInteger.Jacobi(D, val) == -1)
-                        goto case 1;
+                        goto case AtkinCertState.SearchDiscriminant;
                     
                     if (!ModifiedCornacchia(val, ref u, ref v, D))
-                        goto case 1;
+                        goto case AtkinCertState.SearchDiscriminant;
 
-                goto case 2;
-                case 2:
+                goto case AtkinCertState.FindEllipticCurveOrder;
+                case AtkinCertState.FindEllipticCurveOrder:
                     if (bw.CancellationPending) return -1;
                     if (D == -3)
                     {
@@ -115,25 +115,25 @@ namespace Elliptic_Curve_Primality_Proving
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
 
                         order = val + 1 - (u + 3 * v);
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
 
                         order = val + 1 + (u - 3 * v);
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
 
                         order = val + 1 - (u - 3 * v);
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
                     }
                     else
                     if(D == -4)
@@ -142,13 +142,13 @@ namespace Elliptic_Curve_Primality_Proving
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
 
                         order = val + 1 - 2 * v;
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
                     }
                     else
                     {
@@ -156,16 +156,16 @@ namespace Elliptic_Curve_Primality_Proving
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
 
                         order = val + 1 - u;
                         factor = FindFactor(order);
 
                         if (factor != -1)
-                            goto case 3;
+                            goto case AtkinCertState.ComputeParameters;
                     }
-                    goto case 1;
-                case 3:
+                    goto case AtkinCertState.SearchDiscriminant;
+                case AtkinCertState.ComputeParameters:
                     if (bw.CancellationPending) return -1;
                     if (D == -3)
                     {
@@ -192,47 +192,47 @@ namespace Elliptic_Curve_Primality_Proving
                         BigInteger inv = a.Inverse(val);
                         BigInteger c = (J * inv) % val;
 
-                        if (c == 0) goto case 1;
+                        if (c == 0) goto case AtkinCertState.SearchDiscriminant;
                         a = (-3 * c) % val;
 
                         if (a < 0) a += val;
                         b = (2 * c) % val;
                     }
-                    goto case 4;
-                case 4:
+                    goto case AtkinCertState.FindGenerator;
+                case AtkinCertState.FindGenerator:
                     if (bw.CancellationPending) return -1;
                     g = BigInteger.Next(rand, 1, val - 1);
                     if (D == -3)
                     {
                         if (BigInteger.Pow(g, (val - 1) / 3, val) == 1)
-                            goto case 4;
+                            goto case AtkinCertState.FindGenerator;
                     }
                     else
                     {
                         if (BigInteger.Jacobi(g, val) != -1)
-                            goto case 4;
+                            goto case AtkinCertState.FindGenerator;
                     }
 
                     k = 0;
-                    goto case 5;
-                case 5:
+                    goto case AtkinCertState.GenCurvePoint;
+                case AtkinCertState.GenCurvePoint:
                     if (bw.CancellationPending) return -1;
                     curve = new EllipticCurve(a, b, val, factor, order / factor);
                     point = AtkinMorainUtil.GetBasePoint(curve);
-                    goto case 6;
-                case 6:
+                    goto case AtkinCertState.PointInvalidOrder;
+                case AtkinCertState.PointInvalidOrder:
                     P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
                     Q = ECMath.Multiply(curve, factor, P, ECMode.EC_FASTEST);
 
                     if (Q == ECPoint.POINT_INFINITY)
-                        goto case 9;
+                        goto case AtkinCertState.AppendCertificate;
 
-                    goto case 7;
-                case 7:
+                    goto case AtkinCertState.GenTwistedCurve;
+                case AtkinCertState.GenTwistedCurve:
                     if (bw.CancellationPending) return -1;
                     k++;
                     if (k >= w(D))
-                        goto case 9;
+                        goto case AtkinCertState.AppendCertificate;
 
                     if (D == -3)
                         b = (b * g) % val;
@@ -247,24 +247,29 @@ namespace Elliptic_Curve_Primality_Proving
                         g2 = (g2 * g) % val;
                         b = (b * g2) % val;
                     }
-                    goto case 5;
-                case 8:
+                    goto case AtkinCertState.GenCurvePoint;
+                case AtkinCertState.SmallOrderPoint:
                     if (bw.CancellationPending) return -1;
                     point = AtkinMorainUtil.GetBasePoint(curve);
-                    P = ECMath.Multiply(curve, order / factor, point, ECMode.EC_STANDARD_PROJECTIVE);
+
+                    P = ECMath.Multiply(curve, order / factor, 
+                        point, ECMode.EC_STANDARD_PROJECTIVE);
 
                     if (P == ECPoint.POINT_INFINITY)
-                        goto case 8;
+                        goto case AtkinCertState.SmallOrderPoint;
 
-                    Q = ECMath.Multiply(curve, factor, P, ECMode.EC_FASTEST);
+                    Q = ECMath.Multiply(curve, factor, 
+                        P, ECMode.EC_FASTEST);
 
                     if (Q != ECPoint.POINT_INFINITY)
-                        goto case 7;
+                        goto case AtkinCertState.GenTwistedCurve;
 
-                    goto case 9;
-                case 9:
+                    goto case AtkinCertState.AppendCertificate;
+                case AtkinCertState.AppendCertificate:
                     if (bw.CancellationPending) return -1;
-                    if (P == ECPoint.POINT_INFINITY) goto case 8;
+                    if (P == ECPoint.POINT_INFINITY) 
+                        goto case AtkinCertState.SmallOrderPoint;
+
                     sb.AppendFormat("N = {0}", val.ToString());
                     sb.AppendLine();
                     sb.AppendFormat("a = {0}", a.ToString());
@@ -274,16 +279,27 @@ namespace Elliptic_Curve_Primality_Proving
                     sb.AppendFormat("m = {0}", order.ToString());
                     sb.AppendLine();
                     sb.AppendFormat("q = {0}", factor.ToString());
+
                     sb.AppendLine();
-                    sb.AppendFormat("P = ({0}, {1})", point.GetAffineX().ToString(), point.GetAffineY().ToString());
+                    sb.AppendFormat("P = ({0}, {1})", 
+                        point.GetAffineX().ToString(), 
+                        point.GetAffineY().ToString());
+
                     sb.AppendLine();
-                    sb.AppendFormat("Q = ({0}, {1})", P.GetAffineX().ToString(), P.GetAffineY().ToString());
+                    sb.AppendFormat("Q = ({0}, {1})", 
+                        P.GetAffineX().ToString(), 
+                        P.GetAffineY().ToString());
+
                     sb.AppendLine();
                     sb.Append("R = (0, 1)\n");
                     sb.AppendLine();
-                    cert.Write(a, b, val, order, factor, point.GetAffineX(), point.GetAffineY());
-                    goto case 10;
-                case 10:
+
+                    cert.Write(a, b, val, order, 
+                        factor, point.GetAffineX(), 
+                        point.GetAffineY());
+
+                    goto case AtkinCertState.GoNextCandidate;
+                case AtkinCertState.GoNextCandidate:
                     if (bw.CancellationPending) return -1;
                     val = factor;
                     Hilbert.SetModulus(val);
@@ -292,7 +308,7 @@ namespace Elliptic_Curve_Primality_Proving
                     if (val.GetBits() <= 64)
                         return 1;
 
-                    goto case 1;
+                    goto case AtkinCertState.SearchDiscriminant;
             }
 
             return 0;

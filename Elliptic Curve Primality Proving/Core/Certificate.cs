@@ -2,7 +2,7 @@
 using Eduard;
 using System.Xml;
 
-namespace Elliptic_Curve_Primality_Proving
+namespace Elliptic_Curve_Primality_Proving.Core
 {
     class Certificate
     {

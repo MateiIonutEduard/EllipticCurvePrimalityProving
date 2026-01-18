@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 
-namespace Elliptic_Curve_Primality_Proving
+namespace Elliptic_Curve_Primality_Proving.Core
 {
     class Hilbert
     {
-        private static readonly JObject _jsonData;
-        private static readonly List<long> _discriminants;
-        private static BigInteger _field;
+        private static readonly JObject jsonData;
+        private static readonly List<long> discriminants;
+        private static BigInteger field;
 
         private int _index;
 
@@ -26,17 +26,17 @@ namespace Elliptic_Curve_Primality_Proving
             try
             {
                 var jsonText = File.ReadAllText(@"data\disc.json");
-                _jsonData = JObject.Parse(jsonText);
+                jsonData = JObject.Parse(jsonText);
 
                 /* pre-initialize discriminants list */
-                _discriminants = new List<long> { -3, -4 };
+                discriminants = new List<long> { -3, -4 };
 
-                if (_jsonData["disc"] is JArray discArray)
+                if (jsonData["disc"] is JArray discArray)
                 {
                     foreach (var item in discArray)
                     {
                         if (long.TryParse(item.ToString(), out long discriminant))
-                            _discriminants.Add(discriminant);
+                            discriminants.Add(discriminant);
                     }
                 }
             }
@@ -56,20 +56,20 @@ namespace Elliptic_Curve_Primality_Proving
 
         public static void SetModulus(BigInteger modulus)
         {
-            _field = modulus;
+            field = modulus;
             Polynomial.SetField(modulus);
         }
 
         public long NextDiscriminant()
         {
-            return _index < _discriminants.Count ? _discriminants[_index++] : -1;
+            return _index < discriminants.Count ? discriminants[_index++] : -1;
         }
 
         public Polynomial GetHilbertPolynomial(long D)
         {
             string key = D.ToString();
 
-            if (_jsonData[key] is JArray coefficientsArray)
+            if (jsonData[key] is JArray coefficientsArray)
             {
                 /* pre-allocate array with known size for better performance */
                 var coeffs = new BigInteger[coefficientsArray.Count];

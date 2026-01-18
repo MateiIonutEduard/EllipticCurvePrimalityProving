@@ -68,7 +68,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AtkinMorainUtil.cs" />
+    <Compile Include="Core\AtkinCertState.cs" />
+    <Compile Include="Core\AtkinMorainUtil.cs" />
     <Compile Include="TimeFormatterExtensions.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
@@ -85,9 +86,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Atkin.cs" />
-    <Compile Include="Certificate.cs" />
-    <Compile Include="Hilbert.cs" />
+    <Compile Include="Core\Atkin.cs" />
+    <Compile Include="Core\Certificate.cs" />
+    <Compile Include="Core\Hilbert.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -124,6 +125,7 @@
   <ItemGroup>
     <Resource Include="flower.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
